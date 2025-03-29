@@ -54,7 +54,7 @@ class $modify(BP_CCDirector, CCDirector) {
         int nextLevel = LevelHelper::getLevelFromEXP(newEXP);
         int nextLevelEXP = LevelHelper::getEXPRequiredForLevel(nextLevel);
 
-        Loader::get()->queueInMainThread([this, scene, originalEXP, newEXP, currentLevel, nextLevelEXP, nextLevel] {
+        Loader::get()->queueInMainThread([this, scene = Ref<CCScene>(scene), originalEXP, newEXP, currentLevel, nextLevelEXP, nextLevel] {
             
             CCLayer* parentLayer = nullptr;
             CCObject* obj;

@@ -29,7 +29,7 @@ void Request::setupListener() {
             int nextLevel = LevelHelper::getLevelFromEXP(newEXP);
             int nextLevelEXP = LevelHelper::getEXPRequiredForLevel(nextLevel);
 
-            auto scene = CCDirector::sharedDirector()->getRunningScene();
+            Ref<CCScene> scene = CCDirector::sharedDirector()->getRunningScene();
 
                 Loader::get()->queueInMainThread([scene, originalEXP, newEXP, currentLevel, nextLevelEXP, nextLevel] {
 
