@@ -8,9 +8,8 @@ class $modify(BP_GJScoreCell, GJScoreCell) {
 
         // get main layer
         CCLayer* mainLayer = nullptr;
-        CCObject* obj;
-        CCARRAY_FOREACH(this->getChildren(), obj) {
-            CCLayer* search = typeinfo_cast<CCLayer*>(obj);
+        for (CCNode* node : this->getChildrenExt()) {
+            CCLayer* search = typeinfo_cast<CCLayer*>(node);
             if (search != nullptr && search->getChildrenCount() > 2) {
                 mainLayer = search;
                 break;

@@ -1,15 +1,94 @@
 #include "Request.hpp"
 
 void Request::setupListener() {
-    m_listener.bind([] (web::WebTask::Event* e) {
-        if (web::WebResponse* res = e->getValue()) {
+    // m_listener.bind([] (web::WebTask::Event* e) {
+    //     if (web::WebResponse* res = e->getValue()) {
+    //         Request::m_openGameChecked = true;
+            
+    //         if (!res->ok()) {
+    //             return;
+    //         }
+
+    //         auto str = res->string().unwrapOr("Failed.");
+    //         if (str == "Failed." || str == "-1") {
+    //             return;
+    //         }
+    //         Request::m_cp = std::stoi(parseRequest(str, "8"));
+
+    //         log::info("Creator Points from request: {}", Request::m_cp);
+
+    //         int originalEXP = Mod::get()->getSavedValue<int>("total-exp");
+    //         generateNewTotalEXP();
+
+    //         if (Mod::get()->getSettingValue<bool>("disable-open-check")) {
+    //             return;
+    //         }
+
+    //         int newEXP = Request::currentTotalEXP();
+    //         int currentLevel = LevelHelper::getLevelFromEXP(originalEXP);
+    //         int nextLevel = LevelHelper::getLevelFromEXP(newEXP);
+    //         int nextLevelEXP = LevelHelper::getEXPRequiredForLevel(nextLevel);
+
+    //         auto scene = CCDirector::sharedDirector()->getRunningScene();
+
+    //             Loader::get()->queueInMainThread([scene, originalEXP, newEXP, currentLevel, nextLevelEXP, nextLevel] {
+
+    //                 CCLayer* parentLayer = nullptr;
+    //                 CCObject* obj;
+    //                 for (CCNode* node : scene->getChildrenExt()) {
+    //                     auto ccl = typeinfo_cast<CCLayer*>(obj);
+    //                     if (ccl != nullptr) {
+    //                         parentLayer = ccl;
+    //                         break;
+    //                     }
+    //                 }
+
+    //                 if (nextLevel > currentLevel) {
+    //                     TierBarPopup::createPopupSubroutine(scene, nextLevelEXP, newEXP, 4.5f);
+    //                     if (parentLayer != nullptr) {
+    //                         auto popup = LevelUpPopup::create(currentLevel, nextLevel);
+    //                         popup->m_scene = parentLayer;
+    //                         popup->show();
+    //                     }   
+    //                 } else {
+    //                     TierBarPopup::createPopupSubroutine(scene, originalEXP, newEXP, 0);
+    //                 }
+    //             });
+    //         }
+    //     });
+}
+
+void Request::setCP(int cp) {
+    Request::m_cp = cp;
+}
+
+void Request::performCPRequest() {
+
+    if (Request::m_openGameChecked) {
+        return;
+    }
+
+    int accountID = GJAccountManager::get()->m_accountID;
+
+    if (accountID <= 0) {
+        return;
+    }
+
+    int totalEXP = 0;
+
+    auto req = web::WebRequest();
+    req.bodyString(fmt::format("targetAccountID={}&secret={}", accountID, "Wmfd2893gb7"));
+
+    m_listener.spawn(
+        req.post("http://www.boomlings.com/database/getGJUserInfo20.php"),
+        [](web::WebResponse res) {
             Request::m_openGameChecked = true;
             
-            if (!res->ok()) {
+            if (!res.ok()) {
                 return;
             }
 
-            auto str = res->string().unwrapOr("Failed.");
+            auto str = res.string().unwrapOr("Failed.");
             if (str == "Failed." || str == "-1") {
                 return;
             }
@@ -35,7 +114,7 @@ void Request::setupListener() {
 
                     CCLayer* parentLayer = nullptr;
                     CCObject* obj;
-                    CCARRAY_FOREACH(scene->getChildren(), obj) {
+                    for (CCNode* node : scene->getChildrenExt()) {
                         auto ccl = typeinfo_cast<CCLayer*>(obj);
                         if (ccl != nullptr) {
                             parentLayer = ccl;
@@ -55,30 +134,7 @@ void Request::setupListener() {
                     }
                 });
             }
-        });
-}
-
-void Request::setCP(int cp) {
-    Request::m_cp = cp;
-}
-
-void Request::performCPRequest() {
-
-    if (Request::m_openGameChecked) {
-        return;
-    }
-
-    int accountID = GJAccountManager::get()->m_accountID;
-
-    if (accountID <= 0) {
-        return;
-    }
-
-    int totalEXP = 0;
-
-    auto req = web::WebRequest();
-    req.bodyString(fmt::format("targetAccountID={}&secret={}", accountID, "Wmfd2893gb7"));
-    m_listener.setFilter(req.post("http://www.boomlings.com/database/getGJUserInfo20.php"));
+    );
 
     /*
     web::AsyncWebRequest()
@@ -143,12 +199,14 @@ int Request::generateNewTotalEXP() {
         return 0;
     }
 
-    Request::m_stars = std::stoi((stats->valueForKey("6"))->m_sString);
-    Request::m_moons = std::stoi((stats->valueForKey("28"))->m_sString);
-    Request::m_diamonds = std::stoi((stats->valueForKey("13"))->m_sString);
-    Request::m_gold_coins = std::stoi((stats->valueForKey("8"))->m_sString);
-    Request::m_user_coins = std::stoi((stats->valueForKey("12"))->m_sString);
-    Request::m_demons = std::stoi((stats->valueForKey("5"))->m_sString);
+    
+
+    Request::m_stars = geode::utils::numFromString<int>((stats->valueForKey("6"))->m_sString).unwrapOr(0);
+    Request::m_moons = geode::utils::numFromString<int>((stats->valueForKey("28"))->m_sString).unwrapOr(0);
+    Request::m_diamonds = geode::utils::numFromString<int>((stats->valueForKey("13"))->m_sString).unwrapOr(0);
+    Request::m_gold_coins = geode::utils::numFromString<int>((stats->valueForKey("8"))->m_sString).unwrapOr(0);
+    Request::m_user_coins = geode::utils::numFromString<int>((stats->valueForKey("12"))->m_sString).unwrapOr(0);
+    Request::m_demons = geode::utils::numFromString<int>((stats->valueForKey("5"))->m_sString).unwrapOr(0);
 
     int totalEXP = currentTotalEXP();
 

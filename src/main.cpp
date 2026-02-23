@@ -57,9 +57,8 @@ class $modify(BP_CCDirector, CCDirector) {
         Loader::get()->queueInMainThread([this, scene, originalEXP, newEXP, currentLevel, nextLevelEXP, nextLevel] {
             
             CCLayer* parentLayer = nullptr;
-            CCObject* obj;
-            CCARRAY_FOREACH(scene->getChildren(), obj) {
-                auto ccl = typeinfo_cast<CCLayer*>(obj);
+            for (CCNode* node : scene->getChildrenExt()) {
+                auto ccl = typeinfo_cast<CCLayer*>(node);
                 if (ccl != nullptr) {
                     parentLayer = ccl;
                     break;

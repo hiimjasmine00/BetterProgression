@@ -29,13 +29,14 @@ class $modify(BP_ProfilePage, ProfilePage) {
             return;
         }
         CCObject* obj;
-        CCARRAY_FOREACH(this->getChildren(), obj) {
-            auto ccl = typeinfo_cast<CCLayer*>(obj);
+        for (CCNode* node : this->getChildrenExt()) {
+            auto ccl = typeinfo_cast<CCLayer*>(node);
             if (ccl != nullptr) {
                 this->m_fields->m_mainLayer = ccl;
                 break;
             }
         }
+
         return;
     }
 
@@ -325,8 +326,8 @@ class $modify(BP_ProfilePage, ProfilePage) {
         CCLayer* parentLayer = nullptr;
         CCObject* obj;
 
-        CCARRAY_FOREACH(scene->getChildren(), obj) {
-            auto ccl = typeinfo_cast<CCLayer*>(obj);
+        for (CCNode* node : scene->getChildrenExt()) {
+            auto ccl = typeinfo_cast<CCLayer*>(node);
             if (ccl != nullptr) {
                 parentLayer = ccl;
                 break;

@@ -1,3 +1,6 @@
+# v1.3.2
+- Made compatible with GD 2.2081
+
 # v1.3.0
 - Made compatible with GD 2.2074
 
