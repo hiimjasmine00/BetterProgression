@@ -17,7 +17,7 @@ class $modify(BP_MenuLayer, MenuLayer) {
         if (!MenuLayer::init()) {
             return false;
         }
-        Request::setupListener();
+        // Request::setupListener();
         Request::performCPRequest();
         
         return true;

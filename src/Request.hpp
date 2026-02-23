@@ -25,7 +25,7 @@ class Request {
         inline static int m_cp = 0;
 
         inline static int m_currentTotalEXP = 0;
-        inline static EventListener<web::WebTask> m_listener;
+        inline static TaskHolder<web::WebResponse> m_listener;
 
     public:
         static void performCPRequest();
